@@ -194,6 +194,8 @@ def create_mcp(engine: LedgerEngine, auth) -> FastMCP:
 
 
 
+from urllib.parse import parse_qs, urlencode
+
 class TokenQueryMiddleware:
     def __init__(self, app):
         self.app = app
@@ -202,8 +204,11 @@ class TokenQueryMiddleware:
         if scope.get("type") == "http":
             query_string = scope.get("query_string", b"").decode("latin-1")
             if query_string:
-                params = parse_qs(query_string)
-                token = params.get("token", [None])[0] or params.get("api_key", [None])[0]
+                params = parse_qs(query_string, keep_blank_values=True)
+                token = None
+                for key in ("token", "access_token", "api_key"):
+                    if key in params:
+                        token = params.pop(key)[0]
                 if token:
                     headers = [
                         (k, v) for (k, v) in scope.get("headers", [])
@@ -211,6 +216,8 @@ class TokenQueryMiddleware:
                     ]
                     headers.append((b"authorization", f"Bearer {token}".encode("latin-1")))
                     scope["headers"] = headers
+                    # Strip token from query_string so downstream checks pass
+                    scope["query_string"] = urlencode(params, doseq=True).encode("latin-1")
         await self.app(scope, receive, send)
 
 def create_app():

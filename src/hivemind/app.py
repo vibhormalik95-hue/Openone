@@ -46,9 +46,10 @@ class RequestGuard:
         if is_mcp:
             query = parse_qs(scope.get("query_string", b"").decode("ascii", errors="ignore"))
             if "token" in query or "access_token" in query:
-                return await JSONResponse(
-                    {"error": "query_tokens_forbidden_use_authorization_header"}, status_code=400
-                )(scope, receive, send)
+                tok = (query.get("token") or query.get("access_token"))[0]
+                if b"authorization" not in headers:
+                    headers[b"authorization"] = f"Bearer {tok}".encode("latin-1")
+                    scope["headers"] = list(headers.items())
             origin = headers.get(b"origin")
             if origin and origin.decode("utf-8", errors="replace") not in self.settings.allowed_origins:
                 return await JSONResponse({"error": "origin_denied"}, status_code=403)(
