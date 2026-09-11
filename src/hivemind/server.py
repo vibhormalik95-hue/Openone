@@ -1,3 +1,4 @@
+from urllib.parse import parse_qs
 """Headless memory surface shared by classic FastMCP and the modern adapter.
 
 Run with uvicorn hivemind.server:create_app --factory. The wire initialize field
@@ -192,7 +193,27 @@ def create_mcp(engine: LedgerEngine, auth) -> FastMCP:
     return mcp
 
 
+
+class TokenQueryMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope.get("type") == "http":
+            query_string = scope.get("query_string", b"").decode("latin-1")
+            if query_string:
+                params = parse_qs(query_string)
+                token = params.get("token", [None])[0] or params.get("api_key", [None])[0]
+                if token:
+                    headers = [
+                        (k, v) for (k, v) in scope.get("headers", [])
+                        if k.lower() != b"authorization"
+                    ]
+                    headers.append((b"authorization", f"Bearer {token}".encode("latin-1")))
+                    scope["headers"] = headers
+        await self.app(scope, receive, send)
+
 def create_app():
     """ASGI factory retains shared OAuth, origin guards, health and pool lifecycle."""
     from hivemind.app import create_app as make_app
-    return make_app()
+    return TokenQueryMiddleware(make_app())
