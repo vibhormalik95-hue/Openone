@@ -12,7 +12,7 @@ DO $$ BEGIN
   END IF;
 END $$;
 GRANT USAGE ON SCHEMA public TO hivemind_audit_writer;
-SET LOCAL ROLE hivemind_owner;
+SET ROLE hivemind_owner;
 ALTER TABLE memory_events RENAME TO immutable_event_log;
 ALTER TABLE ledger_constraints RENAME TO authoritative_constraints;
 ALTER TABLE vector_knowledge RENAME TO semantic_embeddings;
@@ -363,7 +363,7 @@ BEGIN
   RETURN true;
 END $$;
 
-SET LOCAL ROLE hivemind_owner;
+SET ROLE hivemind_owner;
 -- Accepted/retracted source rows are never rewritten. The effective lifecycle is
 -- derived: only the newest non-tentative revision may be active or retracted;
 -- older non-tentative rows are superseded. Tentative discussion does not displace
@@ -468,7 +468,10 @@ GRANT EXECUTE ON FUNCTION ledger_canonical_json(jsonb),ledger_digest(jsonb) TO h
 -- ALTER TABLE above holds ACCESS EXCLUSIVE until COMMIT, so inserts cannot race
 -- the backfill. Timestamp/UUID order is reproducible, but is not claimed to be the
 -- original transaction order. The historical_backfill bit exposes this boundary.
-SET LOCAL timezone='UTC';
+-- Session-scoped, not SET LOCAL: outside an explicit transaction block SET LOCAL
+-- is discarded with only a warning, which would hash the backfill payloads under
+-- whatever timezone the administrator's client happened to carry.
+SET timezone='UTC';
 DO $$ DECLARE existing_row record; BEGIN
   FOR existing_row IN
     SELECT entry_type,payload FROM (
@@ -480,8 +483,9 @@ DO $$ DECLARE existing_row record; BEGIN
     PERFORM public.append_project_audit(existing_row.entry_type,existing_row.payload,true);
   END LOOP;
 END $$;
+RESET timezone;
 
-SET LOCAL ROLE hivemind_owner;
+SET ROLE hivemind_owner;
 CREATE FUNCTION execute_atomic_sync(p_project_id uuid,p_query_text text,p_query_vector vector(1536),p_new_claims jsonb)
 RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER
 SET search_path=pg_catalog,public,pg_temp SET timezone='UTC' AS $$

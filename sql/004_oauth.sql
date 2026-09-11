@@ -1,4 +1,4 @@
-SET LOCAL ROLE hivemind_owner;
+SET ROLE hivemind_owner;
 CREATE TABLE oauth_identity_bindings (
   issuer text NOT NULL CHECK(length(issuer) BETWEEN 10 AND 512 AND issuer LIKE 'https://%/'),
   subject text NOT NULL CHECK(length(subject) BETWEEN 1 AND 255),
