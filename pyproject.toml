@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "hivemind-scale"
 version = "0.3.0"
 description = "Headless, project-scoped working memory over remote MCP"
-requires-python = ">=3.12,<3.14"
+requires-python = ">=3.12,<=3.14"
 dependencies = [
   "fastmcp-slim[server]==3.4.7",
   "fastapi==0.141.1",
