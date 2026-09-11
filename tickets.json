@@ -1,0 +1,1056 @@
+{
+  "schema_version": 1,
+  "project": "Hivemind Scale \u2014 seven-day paid beta",
+  "project_labels": [
+    "Hivemind Scale",
+    "MCP SaaS",
+    "Paid beta"
+  ],
+  "issue_labels": [
+    "epic",
+    "platform",
+    "mcp",
+    "database",
+    "security",
+    "ops",
+    "billing",
+    "growth",
+    "client-acceptance",
+    "launch-blocker",
+    "post-launch"
+  ],
+  "epics": [
+    {
+      "key": "E1",
+      "title": "Tooling and delivery",
+      "story": "Establish an auditable development and delivery loop.",
+      "labels": [
+        "epic",
+        "platform"
+      ],
+      "acceptance": [
+        "All launch-blocker child issues have reviewed evidence attached.",
+        "Open residual risks have an owner and a dated follow-up ticket."
+      ]
+    },
+    {
+      "key": "E2",
+      "title": "MCP and client interoperability",
+      "story": "Capture and recall memory through supported native clients.",
+      "labels": [
+        "epic",
+        "mcp"
+      ],
+      "acceptance": [
+        "All launch-blocker child issues have reviewed evidence attached.",
+        "Open residual risks have an owner and a dated follow-up ticket."
+      ]
+    },
+    {
+      "key": "E3",
+      "title": "Memory correctness and isolation",
+      "story": "Keep exact state and semantic memory isolated and consistent.",
+      "labels": [
+        "epic",
+        "database"
+      ],
+      "acceptance": [
+        "All launch-blocker child issues have reviewed evidence attached.",
+        "Open residual risks have an owner and a dated follow-up ticket."
+      ]
+    },
+    {
+      "key": "E4",
+      "title": "Cloud operations and recovery",
+      "story": "Deploy safely, measure availability, and recover persisted data.",
+      "labels": [
+        "epic",
+        "ops"
+      ],
+      "acceptance": [
+        "All launch-blocker child issues have reviewed evidence attached.",
+        "Open residual risks have an owner and a dated follow-up ticket."
+      ]
+    },
+    {
+      "key": "E5",
+      "title": "Billing and onboarding",
+      "story": "Convert a verified paid subscription into usable scoped access.",
+      "labels": [
+        "epic",
+        "billing"
+      ],
+      "acceptance": [
+        "All launch-blocker child issues have reviewed evidence attached.",
+        "Open residual risks have an owner and a dated follow-up ticket."
+      ]
+    },
+    {
+      "key": "E6",
+      "title": "Launch and customer outcomes",
+      "story": "Validate demand and deliver a truthful, supportable paid beta.",
+      "labels": [
+        "epic",
+        "growth"
+      ],
+      "acceptance": [
+        "All launch-blocker child issues have reviewed evidence attached.",
+        "Open residual risks have an owner and a dated follow-up ticket."
+      ]
+    }
+  ],
+  "tickets": [
+    {
+      "key": "HM001",
+      "epic": "E1",
+      "day": 1,
+      "title": "Initialize private repository and protected main",
+      "story": "As an engineer, I can propose isolated changes with mandatory review.",
+      "acceptance": [
+        "Repository has README, license decision, ignore rules and no live secrets.",
+        "Main requires passing CI and one independent review; force push and deletion are disabled.",
+        "An initial PR proves branch protections and records the tested commit."
+      ],
+      "depends_on": [],
+      "labels": [
+        "platform",
+        "launch-blocker"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM002",
+      "epic": "E1",
+      "day": 1,
+      "title": "Install and verify three agent workflows",
+      "story": "As an engineer, I can use Claude Code, Cursor and Codex against one contract.",
+      "acceptance": [
+        "CLAUDE.md imports AGENTS.md and current Cursor .mdc rules are loaded.",
+        "Each agent states the headless product invariant and runtime-role restriction.",
+        "An isolated worktree is used for each concurrent implementation."
+      ],
+      "depends_on": [
+        "HM001"
+      ],
+      "labels": [
+        "platform"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM003",
+      "epic": "E1",
+      "day": 1,
+      "title": "Provision Linear hierarchy idempotently",
+      "story": "As the delivery lead, I can create the complete board without duplicates.",
+      "acceptance": [
+        "Bootstrap creates six epic parents, 42 tickets, labels and two non-overlapping cycles.",
+        "Second run creates zero duplicate issues and retains existing human edits.",
+        "Ticket dependencies become blocks relations and a readback mapping contains every issue ID."
+      ],
+      "depends_on": [
+        "HM001"
+      ],
+      "labels": [
+        "platform"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM004",
+      "epic": "E1",
+      "day": 1,
+      "title": "Link GitHub and Linear; mirror Origin optionally",
+      "story": "As the delivery lead, I see authoritative PR progress next to acceptance criteria.",
+      "acceptance": [
+        "Native integration maps opened PR to In Progress, review to In Review, merge to Ready for QA.",
+        "A signed Linear change updates only the designated metadata comment when optional bridge is enabled.",
+        "Origin mirror, if enabled, leaves GitHub Issues and Actions authoritative."
+      ],
+      "depends_on": [
+        "HM003"
+      ],
+      "labels": [
+        "platform"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM005",
+      "epic": "E1",
+      "day": 1,
+      "title": "Lock dependencies and audit upstream surface",
+      "story": "As a maintainer, I can explain every runtime dependency.",
+      "acceptance": [
+        "Lockfile resolves FastMCP, psycopg, pgvector and billing dependencies at exact versions.",
+        "Dependency licenses and selected public imports are recorded.",
+        "No chat frontend, provider router or general agent framework is included; any Redis dependency is justified solely for shared OAuth state, not memory jobs."
+      ],
+      "depends_on": [
+        "HM001"
+      ],
+      "labels": [
+        "platform",
+        "security"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM006",
+      "epic": "E3",
+      "day": 1,
+      "title": "Apply PostgreSQL 17 and vector migration",
+      "story": "As an operator, I can create the complete schema on a blank database.",
+      "acceptance": [
+        "Migration applies with ON_ERROR_STOP against PostgreSQL 17 and pgvector 0.8.x.",
+        "Composite tenant/project foreign keys prevent mismatched parentage.",
+        "Vectors have one declared dimension and HNSW cosine opclass with m=16 and ef_construction=64."
+      ],
+      "depends_on": [
+        "HM005"
+      ],
+      "labels": [
+        "database",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM007",
+      "epic": "E3",
+      "day": 1,
+      "title": "Separate database roles and fail-closed RLS",
+      "story": "As a tenant, other customers and unauthorized projects cannot read my memory.",
+      "acceptance": [
+        "Runtime role owns no protected tables and has neither superuser nor BYPASSRLS.",
+        "Missing or malformed request identity fails closed.",
+        "Direct SQL tests deny another tenant and another project within the same tenant."
+      ],
+      "depends_on": [
+        "HM006"
+      ],
+      "labels": [
+        "database",
+        "security",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM008",
+      "epic": "E2",
+      "day": 2,
+      "title": "Define the two typed MCP tool contracts",
+      "story": "As a native-client user, my agent discovers unambiguous commit and recall tools.",
+      "acceptance": [
+        "Input and output schemas reject unknown fields and oversized content.",
+        "Both tools carry explicit effect/idempotency annotations and compact descriptions.",
+        "No tenant ID in client arguments can change authenticated tenant identity."
+      ],
+      "depends_on": [
+        "HM007"
+      ],
+      "labels": [
+        "mcp",
+        "launch-blocker"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM009",
+      "epic": "E2",
+      "day": 2,
+      "title": "Serve authenticated Streamable HTTP and hosted-client OAuth",
+      "story": "As a user, I can connect a scoped bearer token to the remote endpoint.",
+      "acceptance": [
+        "Initialize, tools/list and tools/call succeed over Streamable HTTP.",
+        "Missing, expired, revoked, wrong-project and insufficient-scope tokens are denied.",
+        "Origin/Host validation and bounded body handling reject hostile requests.",
+        "OAuth uses established FastMCP/provider components with exact issuer, audience/resource, callback allowlist, S256 PKCE and explicit issuer/subject-to-paid-key binding.",
+        "Encrypted shared OAuth state survives restart; unlinked identities and guessed project/tenant IDs fail closed."
+      ],
+      "depends_on": [
+        "HM008"
+      ],
+      "labels": [
+        "mcp",
+        "security",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM010",
+      "epic": "E3",
+      "day": 2,
+      "title": "Make commit_memory atomic and idempotent",
+      "story": "As a user, retries never create duplicate decisions or tasks.",
+      "acceptance": [
+        "Same idempotency key and canonical payload returns the stored result.",
+        "Same key with a different payload returns a conflict without side effects.",
+        "Concurrent duplicate requests yield exactly one persisted event and one embedding job."
+      ],
+      "depends_on": [
+        "HM008"
+      ],
+      "labels": [
+        "database",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM011",
+      "epic": "E3",
+      "day": 2,
+      "title": "Implement exact constraint ledger and revisions",
+      "story": "As a project owner, approved constraints survive topic changes.",
+      "acceptance": [
+        "Active constraints are independent of semantic distance and top-k memory count.",
+        "Contradictory updates require explicit supersession/revision handling.",
+        "A stale revision cannot silently overwrite a newer accepted decision."
+      ],
+      "depends_on": [
+        "HM010"
+      ],
+      "labels": [
+        "database",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM012",
+      "epic": "E3",
+      "day": 2,
+      "title": "Implement durable embedding worker",
+      "story": "As an operator, committed memory eventually receives a valid embedding.",
+      "acceptance": [
+        "Database transaction schedules work durably before commit responds.",
+        "Worker retries transient provider failures with bounded attempts and visible dead letters.",
+        "Crash after a provider response but before acknowledgment does not create duplicate embeddings."
+      ],
+      "depends_on": [
+        "HM010"
+      ],
+      "labels": [
+        "database",
+        "ops"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM013",
+      "epic": "E3",
+      "day": 2,
+      "title": "Implement hybrid context procedure",
+      "story": "As a user, recall returns exact constraints and relevant semantic memories.",
+      "acceptance": [
+        "match_project_context applies caller project authorization and cosine ranking.",
+        "All eligible active constraints are returned or an explicit packet-size error/truncation policy is applied.",
+        "Packet includes provenance, version and embedding-pending indicators where applicable."
+      ],
+      "depends_on": [
+        "HM011",
+        "HM012"
+      ],
+      "labels": [
+        "database",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM014",
+      "epic": "E2",
+      "day": 2,
+      "title": "Run service acceptance and isolation suite",
+      "story": "As a release owner, a green build proves memory correctness boundaries.",
+      "acceptance": [
+        "Tests cover scoped credentials, tenant leakage, project leakage, replay and concurrent revisions.",
+        "A provider timeout produces a bounded response and durable work state.",
+        "No test substitutes the migration-owner role for runtime-role isolation assertions."
+      ],
+      "depends_on": [
+        "HM009",
+        "HM013"
+      ],
+      "labels": [
+        "mcp",
+        "security",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM015",
+      "epic": "E4",
+      "day": 3,
+      "title": "Deploy staging with TLS and streaming proxy",
+      "story": "As a tester, I reach a stable HTTPS MCP endpoint.",
+      "acceptance": [
+        "Caddy obtains a valid certificate using controlled DNS/ports.",
+        "Streaming chunks are delivered promptly without proxy buffering.",
+        "Database and application admin ports are inaccessible from the public network."
+      ],
+      "depends_on": [
+        "HM014"
+      ],
+      "labels": [
+        "ops",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 1,
+      "owner_role": "DevOps engineer"
+    },
+    {
+      "key": "HM016",
+      "epic": "E4",
+      "day": 3,
+      "title": "Add liveness readiness and private diagnostics",
+      "story": "As an operator, I distinguish process failure from database dependency failure.",
+      "acceptance": [
+        "Liveness avoids provider/database dependence; readiness verifies required local dependencies.",
+        "Readiness contains no database DSN, tenant data or secret values.",
+        "An external monitor detects controlled downtime and records recovery."
+      ],
+      "depends_on": [
+        "HM015"
+      ],
+      "labels": [
+        "ops"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM017",
+      "epic": "E4",
+      "day": 3,
+      "title": "Ship CI and immutable blue-green release",
+      "story": "As a release owner, failed candidates never replace healthy production.",
+      "acceptance": [
+        "CI lints, tests a real vector-enabled Postgres and builds an immutable OCI digest.",
+        "Deploy starts inactive color, waits for readiness and runs MCP smoke tests before proxy switch.",
+        "Rollback restores previous digest without destructive schema reversal."
+      ],
+      "depends_on": [
+        "HM015"
+      ],
+      "labels": [
+        "ops",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 1,
+      "owner_role": "DevOps engineer"
+    },
+    {
+      "key": "HM018",
+      "epic": "E2",
+      "day": 3,
+      "title": "Verify Claude supported surfaces",
+      "story": "As a Claude user, I can retain and recall a decision in supported app surfaces.",
+      "acceptance": [
+        "Record account plan, client version, transport, auth mode and observation date.",
+        "Commit from one tested Claude surface and recall the exact constraint in a separate session.",
+        "Document any OAuth, connector permission, confirmation or mobile limitation.",
+        "Hosted Claude completes discovery, PKCE login, both tools and token refresh; a mobile claim requires a separate observed mobile test."
+      ],
+      "depends_on": [
+        "HM015"
+      ],
+      "labels": [
+        "mcp",
+        "client-acceptance",
+        "launch-blocker"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "QA engineer"
+    },
+    {
+      "key": "HM019",
+      "epic": "E2",
+      "day": 3,
+      "title": "Verify ChatGPT MCP and Custom GPT distinction",
+      "story": "As a ChatGPT user, onboarding matches the actual supported integration surface.",
+      "acceptance": [
+        "Test MCP connection on an eligible account with permitted read and write tools.",
+        "Do not describe a Custom GPT Action as native MCP; separately test the REST adapter if offered.",
+        "Record required authorization/confirmation and supported account/client matrix.",
+        "Native ChatGPT OAuth discovery, exact callback, S256 PKCE, consent and refresh pass against the deployed provider; personal-key tests alone cannot pass this gate."
+      ],
+      "depends_on": [
+        "HM015"
+      ],
+      "labels": [
+        "mcp",
+        "client-acceptance",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 1,
+      "owner_role": "QA engineer"
+    },
+    {
+      "key": "HM020",
+      "epic": "E2",
+      "day": 3,
+      "title": "Verify Cursor and Claude Code clients",
+      "story": "As a developer, I can use memory in my existing coding workflow.",
+      "acceptance": [
+        "Both clients complete initialize, list, commit and recall against staging.",
+        "A decision committed in one client is recalled with provenance in the other.",
+        "Document exact config and token replacement/revocation procedure."
+      ],
+      "depends_on": [
+        "HM015"
+      ],
+      "labels": [
+        "mcp",
+        "client-acceptance"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "QA engineer"
+    },
+    {
+      "key": "HM021",
+      "epic": "E5",
+      "day": 4,
+      "title": "Create truthful landing and plan definitions",
+      "story": "As a buyer, I understand product value, access and usage limits.",
+      "acceptance": [
+        "Starter is $15/month for five projects and personal keys.",
+        "Pro/Team is $49/month with unlimited project count and shared organization memory; usage limits remain explicit.",
+        "The page states native-client eligibility, data handling and current beta limitations."
+      ],
+      "depends_on": [
+        "HM018",
+        "HM019",
+        "HM020"
+      ],
+      "labels": [
+        "billing",
+        "growth"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Commercial lead"
+    },
+    {
+      "key": "HM022",
+      "epic": "E5",
+      "day": 4,
+      "title": "Create Stripe catalog and server-side Checkout",
+      "story": "As a buyer, I can subscribe to the chosen server-validated plan.",
+      "acceptance": [
+        "Price IDs are created once and looked up from controlled configuration.",
+        "Browser cannot set arbitrary price, tenant entitlement or subscription status.",
+        "Checkout has verified return-origin handling and an opaque one-use enrollment claim."
+      ],
+      "depends_on": [
+        "HM021"
+      ],
+      "labels": [
+        "billing",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM023",
+      "epic": "E5",
+      "day": 4,
+      "title": "Handle Stripe events with durable reconciliation",
+      "story": "As a buyer, valid payment provisions my tenant once.",
+      "acceptance": [
+        "Raw-body signature verification rejects forged and stale signatures.",
+        "Duplicate and out-of-order events reconcile current subscription status without duplicate tenants.",
+        "Only valid allowed products and billable states enable the requested tier.",
+        "Concurrent deliveries of the same event and distinct events for one subscription produce one tenant and entitlement result; a lost response followed by retry creates no duplicate key or enrollment."
+      ],
+      "depends_on": [
+        "HM022",
+        "HM007"
+      ],
+      "labels": [
+        "billing",
+        "security",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM024",
+      "epic": "E5",
+      "day": 4,
+      "title": "Issue and reveal scoped access keys once",
+      "story": "As an authenticated customer, I receive usable instructions without exposing my key.",
+      "acceptance": [
+        "Raw token is generated with cryptographic entropy; database stores only a keyed digest.",
+        "The one-use claim is bound to the checkout owner and cannot be replayed or guessed.",
+        "Key page is no-store, no-referrer and has no analytics or third-party scripts."
+      ],
+      "depends_on": [
+        "HM023"
+      ],
+      "labels": [
+        "billing",
+        "security",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM025",
+      "epic": "E5",
+      "day": 4,
+      "title": "Provide billing portal and cancellation behavior",
+      "story": "As a customer, I can manage billing and understand entitlement expiry.",
+      "acceptance": [
+        "Portal creation verifies customer ownership instead of accepting arbitrary customer IDs.",
+        "Cancellation at period end retains access until the authoritative end date.",
+        "Failed payment grace, canceled subscription and downgrade over five projects have explicit tested policies."
+      ],
+      "depends_on": [
+        "HM023"
+      ],
+      "labels": [
+        "billing",
+        "launch-blocker"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM026",
+      "epic": "E5",
+      "day": 4,
+      "title": "Implement project access and team memberships",
+      "story": "As an organization owner, I can share selected memory without sharing secret keys.",
+      "acceptance": [
+        "Shared organization memory requires explicit membership and project permissions.",
+        "Each member uses individually revocable credentials and cannot promote their own role.",
+        "Invitation/recovery flow is tested or Team enrollment is explicitly operator-assisted for beta."
+      ],
+      "depends_on": [
+        "HM024"
+      ],
+      "labels": [
+        "billing",
+        "security",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM027",
+      "epic": "E4",
+      "day": 5,
+      "title": "Measure realistic multiclient load",
+      "story": "As an operator, I know safe concurrency and latency limits.",
+      "acceptance": [
+        "Run mixed commit/recall load for at least 30 minutes using production-sized pools.",
+        "Record p50/p95/p99, error rate, queue lag, database saturation and cost at target concurrency.",
+        "Admission control responds consistently when measured capacity is exceeded."
+      ],
+      "depends_on": [
+        "HM017",
+        "HM020"
+      ],
+      "labels": [
+        "ops",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 1,
+      "owner_role": "DevOps engineer"
+    },
+    {
+      "key": "HM028",
+      "epic": "E3",
+      "day": 5,
+      "title": "Benchmark filtered HNSW recall",
+      "story": "As a user, selective projects still return relevant context.",
+      "acceptance": [
+        "Compare approximate top-k with exact cosine on labeled representative project distributions.",
+        "Record ef_search and iterative-scan settings with recall@k and latency.",
+        "Small/selective-project exact fallback and constraint completeness have explicit acceptance thresholds."
+      ],
+      "depends_on": [
+        "HM013",
+        "HM027"
+      ],
+      "labels": [
+        "database"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM029",
+      "epic": "E2",
+      "day": 5,
+      "title": "Test token revocation and session boundaries",
+      "story": "As a customer, revoking a key stops future use promptly.",
+      "acceptance": [
+        "A revoked credential cannot authorize a new request even with an old MCP session ID.",
+        "Concurrent tenants and reused pool connections never exchange authentication context.",
+        "Rotation replaces per-client credentials without storing tokens in URL query strings.",
+        "An API key expiring during an active MCP session blocks the next tool call; OAuth reference-token expiry refreshes only while the bound key and subscription remain authorized."
+      ],
+      "depends_on": [
+        "HM024",
+        "HM027"
+      ],
+      "labels": [
+        "security",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM030",
+      "epic": "E2",
+      "day": 5,
+      "title": "Evaluate memory steering and prompt injection",
+      "story": "As a user, memory improves continuity without treating recalled data as instructions.",
+      "acceptance": [
+        "Twenty scripted conversations test recall-before-work and commit-after-approved-outcome behavior.",
+        "Malicious memory asking for exfiltration or instruction override is treated as data.",
+        "Measure missed writes, duplicate writes, incorrect constraints and confirmation friction per client."
+      ],
+      "depends_on": [
+        "HM018",
+        "HM019",
+        "HM020"
+      ],
+      "labels": [
+        "mcp",
+        "security",
+        "client-acceptance"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Backend engineer"
+    },
+    {
+      "key": "HM031",
+      "epic": "E4",
+      "day": 5,
+      "title": "Exercise backup restore and incident runbook",
+      "story": "As an operator, I can recover data on an independent database.",
+      "acceptance": [
+        "Restore a backup into a fresh environment and verify counts plus cross-tenant isolation.",
+        "Record measured RPO/RTO and confirm application role grants survived restore.",
+        "Drill credential compromise, provider outage and failed deploy with named response owner.",
+        "Restore into a new disposable database, run a real MCP commit/recall and runtime-role isolation checks there, and reapply post-backup deletion/revocation records before any traffic cutover."
+      ],
+      "depends_on": [
+        "HM017",
+        "HM026"
+      ],
+      "labels": [
+        "ops",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 1,
+      "owner_role": "DevOps engineer"
+    },
+    {
+      "key": "HM032",
+      "epic": "E5",
+      "day": 5,
+      "title": "Run full commercial lifecycle tests",
+      "story": "As a release owner, billing and access stay consistent through lifecycle events.",
+      "acceptance": [
+        "Stripe test-mode checkout yields one tenant and a working scoped key.",
+        "Replay webhook, refund/cancel/downgrade and delayed-payment cases match policy.",
+        "Quota enforcement prevents Starter project six and unauthorized Team sharing."
+      ],
+      "depends_on": [
+        "HM025",
+        "HM026",
+        "HM029"
+      ],
+      "labels": [
+        "billing",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 1,
+      "owner_role": "QA engineer"
+    },
+    {
+      "key": "HM033",
+      "epic": "E6",
+      "day": 6,
+      "title": "Recruit ten eligible design partners",
+      "story": "As a commercial lead, I find users with repeated multi-model project work.",
+      "acceptance": [
+        "Recruit from permission-appropriate X, Reddit and developer Discord participation.",
+        "Every invitation discloses beta status, supported native clients and paid plan terms.",
+        "Ten candidates have an ICP fit, supported account, consent and onboarding slot."
+      ],
+      "depends_on": [
+        "HM021",
+        "HM030"
+      ],
+      "labels": [
+        "growth"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Commercial lead"
+    },
+    {
+      "key": "HM034",
+      "epic": "E6",
+      "day": 6,
+      "title": "Run supervised beta activation",
+      "story": "As a beta customer, I get a visible cross-client memory win quickly.",
+      "acceptance": [
+        "At least five users complete checkout/key connection/commit/recall sequence.",
+        "Measure time to first cross-client recall and log every blocking step.",
+        "No customer token or unredacted private memory enters issue trackers or recordings."
+      ],
+      "depends_on": [
+        "HM032",
+        "HM033"
+      ],
+      "labels": [
+        "growth",
+        "client-acceptance",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 1,
+      "owner_role": "Commercial lead"
+    },
+    {
+      "key": "HM035",
+      "epic": "E6",
+      "day": 6,
+      "title": "Complete privacy export deletion and support readiness",
+      "story": "As a customer, I can control my saved memory and reach support.",
+      "acceptance": [
+        "Privacy notice states stored fields, embedding processor, retention and deletion behavior.",
+        "Export and deletion are exercised on a test tenant, including queued work and backup retention explanation.",
+        "Support contact, response window and security reporting path are published."
+      ],
+      "depends_on": [
+        "HM031",
+        "HM034"
+      ],
+      "labels": [
+        "growth",
+        "security",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 1,
+      "owner_role": "Commercial lead"
+    },
+    {
+      "key": "HM036",
+      "epic": "E6",
+      "day": 6,
+      "title": "Triage beta friction and gate public launch",
+      "story": "As a release owner, I launch only when customer-critical behavior passes.",
+      "acceptance": [
+        "No open tenant leakage, lost writes, billing duplication or unusable onboarding defects remain.",
+        "Publish measured compatibility matrix and remove unverified client claims.",
+        "Owner signs launch decision with rollback criteria, measured capacity and remaining limitations."
+      ],
+      "depends_on": [
+        "HM027",
+        "HM028",
+        "HM030",
+        "HM034",
+        "HM035"
+      ],
+      "labels": [
+        "growth",
+        "launch-blocker"
+      ],
+      "estimate": 3,
+      "priority": 1,
+      "owner_role": "Release lead"
+    },
+    {
+      "key": "HM037",
+      "epic": "E6",
+      "day": 7,
+      "title": "Publish reproducible native-workflow demo",
+      "story": "As a prospective customer, I can see a specific cross-model continuity benefit.",
+      "acceptance": [
+        "Demo commits a technical decision in one native client and recalls it in another.",
+        "Shows setup, latency, provenance and limitations using synthetic data.",
+        "Landing CTA points to working paid checkout with accurate plan limits."
+      ],
+      "depends_on": [
+        "HM036"
+      ],
+      "labels": [
+        "growth"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Commercial lead"
+    },
+    {
+      "key": "HM038",
+      "epic": "E6",
+      "day": 7,
+      "title": "Launch Product Hunt and Show HN submissions",
+      "story": "As a founder, I invite trial from appropriate developer communities.",
+      "acceptance": [
+        "Submissions use factual product claims and disclose maker affiliation.",
+        "Show HN provides a usable demonstration and links to implementation/behavior explanations.",
+        "Product Hunt launch assets and support coverage are ready before publishing."
+      ],
+      "depends_on": [
+        "HM037"
+      ],
+      "labels": [
+        "growth"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Commercial lead"
+    },
+    {
+      "key": "HM039",
+      "epic": "E4",
+      "day": 7,
+      "title": "Monitor first live purchases and capacity",
+      "story": "As the on-call owner, I verify money turns into working product access.",
+      "acceptance": [
+        "A legitimate live purchase reaches expected entitlement and successful native recall.",
+        "Alert on failed webhook processing, entitlement mismatch, error rate and work-queue lag.",
+        "Track gross MRR, Stripe fees, provider costs and support time separately."
+      ],
+      "depends_on": [
+        "HM038"
+      ],
+      "labels": [
+        "ops",
+        "billing",
+        "launch-blocker"
+      ],
+      "estimate": 2,
+      "priority": 1,
+      "owner_role": "Release lead"
+    },
+    {
+      "key": "HM040",
+      "epic": "E6",
+      "day": 7,
+      "title": "Record launch outcome and next-week priorities",
+      "story": "As the founder, I prioritize based on activation and paid behavior.",
+      "acceptance": [
+        "Report eligible visitors, checkout starts, paid conversions and activated users.",
+        "Collect at least three user descriptions of the actual memory problem solved.",
+        "Freeze unsupported expansion until activation failures and reliability debt are ranked."
+      ],
+      "depends_on": [
+        "HM039"
+      ],
+      "labels": [
+        "growth"
+      ],
+      "estimate": 2,
+      "priority": 2,
+      "owner_role": "Commercial lead"
+    },
+    {
+      "key": "HM041",
+      "epic": "E4",
+      "day": 8,
+      "title": "Close highest-impact production follow-ups",
+      "story": "As a customer, first-week bugs receive measured fixes.",
+      "acceptance": [
+        "All launch P1/P2 incidents have owners, reproduction and correction evidence.",
+        "Retest outage recovery and cost limits using observed real traffic shapes.",
+        "Review error budget and whether managed redundancy is now justified."
+      ],
+      "depends_on": [
+        "HM040"
+      ],
+      "labels": [
+        "ops",
+        "post-launch"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "DevOps engineer"
+    },
+    {
+      "key": "HM042",
+      "epic": "E6",
+      "day": 14,
+      "title": "Measure retention and decide expansion",
+      "story": "As a founder, I know whether users repeatedly need shared memory.",
+      "acceptance": [
+        "Report seven-day retained activated users and repeat cross-client recall rate.",
+        "Interview churned or inactive customers before adding more integrations.",
+        "Decide pricing, quotas and next client investment from measured adoption and margin."
+      ],
+      "depends_on": [
+        "HM040"
+      ],
+      "labels": [
+        "growth",
+        "post-launch"
+      ],
+      "estimate": 3,
+      "priority": 2,
+      "owner_role": "Commercial lead"
+    }
+  ]
+}

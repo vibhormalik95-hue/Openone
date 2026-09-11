@@ -1,0 +1,9 @@
+---
+description: TypeScript used for onboarding or client integration
+globs: "**/*.ts, **/*.tsx"
+alwaysApply: false
+---
+Enable strict TypeScript; parse external input from unknown with runtime schemas.
+Await all I/O; handle cancellation and deadlines. Never expose service credentials to browsers.
+Render only marketing, account and billing controls. Native AI clients own the conversation UI.
+Validate Stripe webhooks on raw request bytes before parsing or provisioning.

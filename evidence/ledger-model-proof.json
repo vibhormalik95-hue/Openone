@@ -1,0 +1,41 @@
+{
+  "bounds": {
+    "entities": 1,
+    "idempotency_keys": 3,
+    "maximum_successful_events": 3,
+    "tenants": 2,
+    "values": 2
+  },
+  "checked_transitions": 26424,
+  "invariants": [
+    "immutable history prefix",
+    "immutable event prefix",
+    "tenant isolation",
+    "atomic rejection and replay",
+    "contiguous versions",
+    "optimistic locking",
+    "event/revision atomicity",
+    "tentative preserves authority",
+    "deduplication preserves version",
+    "retraction removes active state"
+  ],
+  "limits": [
+    "Finite abstract model only; not machine-checked refinement of SQL or Python.",
+    "Serial interleavings model locking semantics; no native concurrency execution is implied.",
+    "No proof of host invocation, provider reasoning, availability, cryptographic isolation or client interoperability."
+  ],
+  "model_source_sha256": "fd8fb31164a0d95b0c543626671b2bfbec9ec976bac441da96df70ed4f008e9e",
+  "outcomes": {
+    "deduplicated": 1008,
+    "forbidden": 13212,
+    "idempotency_conflict": 8172,
+    "inserted": 1020,
+    "invalid_retraction": 438,
+    "replay": 396,
+    "version_conflict": 2178
+  },
+  "proof_kind": "exhaustive_bounded_abstract_state_space",
+  "reachable_states": 2029,
+  "same_version_distinct_writer_schedules": 2,
+  "status": "PASS"
+}

@@ -1,0 +1,11 @@
+---
+description: Async Python, FastMCP, PostgreSQL and pgvector implementation
+globs: "**/*.py, **/*.sql"
+alwaysApply: false
+---
+Keep FastMCP decorators thin. Authenticate first; validate typed input; call domain functions.
+Use transaction-local identity, a parameterized query and the same pooled connection.
+Assert isolation using the non-owner runtime role, including same-tenant project denial.
+Use async I/O, bounded retries and deadlines. Keep external embedding calls outside write locks.
+Make duplicate replay safe and payload mismatch a conflict. Preserve decision provenance.
+When changing retrieval, compare filtered approximate results with exact cosine ground truth.

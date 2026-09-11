@@ -1,0 +1,55 @@
+# Intentionally disposable: separate Compose project per run, no host ports.
+services:
+  postgres:
+    image: ${HVM_PROOF_POSTGRES_IMAGE:-pgvector/pgvector:0.8.0-pg17}
+    environment:
+      POSTGRES_DB: hivemind_proof
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${HVM_PROOF_ADMIN_PASSWORD:?quickstart generates a temporary password}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    networks: [proof]
+    volumes: [proof_database:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U postgres -d hivemind_proof"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+    command: [postgres, -c, log_statement=none, -c, log_min_error_statement=panic]
+  redis:
+    image: ${HVM_PROOF_REDIS_IMAGE:-redis:7.4.5-bookworm}
+    networks: [proof]
+    # Only this run's internal Docker network can reach Redis; no host port exists.
+    command: [redis-server, --save, "", --appendonly, "no", --protected-mode, "no"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  proof:
+    build:
+      context: ..
+      dockerfile: deploy/proof.Dockerfile
+    user: '10001:10001'
+    read_only: true
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: [/tmp:size=64m,mode=1777]
+    volumes:
+      - proof_evidence:/evidence
+    networks: [proof]
+    environment:
+      PYTHONPATH: /app/src
+      HVM_PROOF_ADMIN_PASSWORD: ${HVM_PROOF_ADMIN_PASSWORD:?quickstart generates a temporary password}
+      HVM_PROOF_APP_PASSWORD: ${HVM_PROOF_APP_PASSWORD:?quickstart generates a temporary password}
+      HVM_NATIVE_CONCURRENCY: '1'
+      HVM_PGLITE: '0'
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+networks:
+  proof:
+    internal: true
+volumes:
+  proof_database:
+  proof_evidence:

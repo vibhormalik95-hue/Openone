@@ -1,0 +1,73 @@
+# Credentials, local integration state and generated production configuration.
+.env*
+.stripe-webhook-secret
+.secrets/
+/secrets/
+.local/
+/deploy/*
+!/deploy/set-role-passwords.sql
+/backups/
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+*.dump
+*.dump.age
+
+# Python environments, packages, tests and caches.
+.venv*/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.tox/
+.nox/
+.coverage*
+coverage.xml
+htmlcov/
+.cache/
+
+# JavaScript dependencies and generated assets; retain package/requirements lockfiles.
+node_modules/
+/web/dist/
+/web/.astro/
+.next/
+.turbo/
+build/
+dist/
+*.tsbuildinfo
+
+# Machine-local files and editor state.
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+.claude/settings.local.json
+
+# Generated native-client credentials.
+/client-config/
+key.env
+desktop_bridge_settings.json
+cursor.mcp.json
+
+!/deploy/bootstrap_infra.sh
+
+# Reproducible proof infrastructure; generated proof environments remain private.
+!/deploy/docker-compose.proof.yml
+!/deploy/proof.Dockerfile
+!/deploy/proof.Dockerfile.dockerignore
+!/deploy/proof_entrypoint.py
+.quickstart-venv/
+client-config*/
+mcp.json
+.mcp.json

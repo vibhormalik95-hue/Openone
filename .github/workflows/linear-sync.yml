@@ -1,0 +1,26 @@
+name: Linear metadata link
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, ready_for_review, closed]
+permissions:
+  contents: read
+concurrency:
+  group: linear-link-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  link:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      # Trusted base commit only. Never checkout the PR head with Linear secrets present.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - name: Link allowed issues without executing contributor code
+        env:
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_ID: ${{ vars.LINEAR_TEAM_ID }}
+          LINEAR_PROJECT_ID: ${{ vars.LINEAR_PROJECT_ID }}
+          LINEAR_TEAM_KEY: ${{ vars.LINEAR_TEAM_KEY }}
+        run: python3 scripts/github_linear_sync.py pr

@@ -1,0 +1,58 @@
+---
+import Page from '../layouts/Page.astro';
+---
+<Page title="Your account"><p class="eyebrow">Control your memory</p><h1>Projects and access.</h1><p id="status" role="status" aria-live="polite"></p>
+<section id="login" hidden><h2>Restore your account</h2><form id="recover-form"><label>Recovery code<input name="recovery_code" type="password" required autocomplete="off"/></label><button>Sign in</button></form></section>
+<div id="account" hidden><p id="plan"></p><div class="row"><button id="portal">Manage billing</button><button id="recovery" class="secondary">Replace recovery code</button><button id="logout" class="secondary">Sign out</button></div>
+<section><h2>Projects</h2><ul id="projects"></ul><form id="project-form"><label>Project name<input name="name" required maxlength="120"/></label><label>URL-safe identifier<input name="slug" required maxlength="80" pattern="[a-z0-9]+(-[a-z0-9]+)*"/></label><button>Create project</button></form></section>
+<section><h2>Access keys</h2><p>Use one key per person and device. Choose only the projects it should access. A key's creator remains responsible for secure delivery to its intended user.</p><ul id="keys"></ul><form id="key-form"><label>Person / device label<input name="label" required maxlength="80" pattern="[a-zA-Z0-9@._ /-]+"/></label><label>Projects<select id="project-picker" name="projects" multiple required size="5"></select></label><label><input type="checkbox" name="can_write" checked/> Allow memory commits</label><button>Issue key</button></form></section></div>
+<section id="oauth-link" hidden><h2>Connect Claude or ChatGPT</h2><p id="oauth-key"></p><p>Open the secure sign-in page, confirm the code below, then return here. Sign in with the identity you will use when authorizing Hivemind inside your native app.</p><p>Verification code: <strong id="oauth-code"></strong></p><p><a id="oauth-verify" target="_blank" rel="noopener noreferrer">Open secure sign-in in a new tab →</a></p><p id="oauth-status" role="status" aria-live="polite"></p><div id="oauth-connected" hidden><label>MCP endpoint<input id="oauth-endpoint" readonly/></label><p>Add this endpoint using your app's custom connector controls, and sign in with the same identity. Connector availability and tool approvals depend on your native app and plan.</p></div><button id="oauth-cancel" class="secondary">Close sign-in</button></section>
+<section id="secret-box" hidden><h2>Save this once</h2><p>Store this value in your password manager. New recovery codes replace the previous one.</p><pre id="secret"></pre><button id="hide-secret" class="secondary">I have saved it</button></section></Page>
+<script>
+const status=document.querySelector('#status')!;
+const showSecret=(value:string)=>{document.querySelector('#secret')!.textContent=value;document.querySelector<HTMLElement>('#secret-box')!.hidden=false;};
+async function api(path:string,method='GET',body?:unknown){const r=await fetch('/billing/'+path,{method,headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});const data=await r.json();if(!r.ok)throw new Error(data.detail||'Request failed');return data;}
+async function refresh(){try{const data=await api('account');document.querySelector<HTMLElement>('#login')!.hidden=true;document.querySelector<HTMLElement>('#account')!.hidden=false;document.querySelector('#plan')!.textContent=`${data.plan==='pro'?'Team':'Starter'} · ${data.billing_status}`;const projects=document.querySelector('#projects')!;const picker=document.querySelector('#project-picker')!;projects.replaceChildren();picker.replaceChildren();for(const p of data.projects){const li=document.createElement('li');li.textContent=`${p.name} — ${p.id}`;projects.append(li);const option=document.createElement('option');option.value=p.id;option.textContent=p.name;picker.append(option);}const keys=document.querySelector('#keys')!;keys.replaceChildren();for(const k of data.keys){const li=document.createElement('li');li.textContent=`${k.label} · ${k.prefix}… ${k.revoked_at?'(revoked)':''} `;if(!k.revoked_at){const button=document.createElement('button');button.textContent='Revoke';button.className='secondary';button.addEventListener('click',()=>perform(async()=>{await api(`keys/${k.id}`,'DELETE');await refresh();}));li.append(button);if(data.oauth_enabled){const connect=document.createElement('button');connect.textContent='Connect Claude / ChatGPT';connect.className='secondary';connect.addEventListener('click',()=>perform(async()=>{await startNativeLink(k.id,k.label);}));li.append(document.createTextNode(' '),connect);}}keys.append(li);}}catch(e){document.querySelector<HTMLElement>('#login')!.hidden=false;document.querySelector<HTMLElement>('#account')!.hidden=true;status.textContent=e instanceof Error?e.message:'Could not load account';}}
+async function perform(work:()=>Promise<void>){status.textContent='';try{await work();}catch(e){status.textContent=e instanceof Error?e.message:'Request failed';}}
+document.querySelector('#recover-form')!.addEventListener('submit',e=>{e.preventDefault();perform(async()=>{const form=e.target as HTMLFormElement;const data=await api('recover','POST',{recovery_code:new FormData(form).get('recovery_code')});form.reset();showSecret(data.recovery_code);await refresh();});});
+document.querySelector('#project-form')!.addEventListener('submit',e=>{e.preventDefault();perform(async()=>{const form=e.target as HTMLFormElement;const data=new FormData(form);await api('projects','POST',{name:data.get('name'),slug:data.get('slug')});form.reset();await refresh();});});
+document.querySelector('#key-form')!.addEventListener('submit',e=>{e.preventDefault();perform(async()=>{const form=e.target as HTMLFormElement;const data=new FormData(form);const result=await api('keys','POST',{label:data.get('label'),project_ids:data.getAll('projects'),can_write:data.has('can_write')});showSecret(result.token);form.reset();await refresh();});});
+document.querySelector('#portal')!.addEventListener('click',()=>perform(async()=>{const data=await api('portal','POST');window.location.assign(data.url);}));
+document.querySelector('#recovery')!.addEventListener('click',()=>perform(async()=>{showSecret((await api('recovery-code','POST')).recovery_code);}));
+document.querySelector('#logout')!.addEventListener('click',()=>perform(async()=>{await api('logout','POST');window.location.assign('/');}));
+document.querySelector('#hide-secret')!.addEventListener('click',()=>{document.querySelector('#secret')!.textContent='';document.querySelector<HTMLElement>('#secret-box')!.hidden=true;});
+let linkGeneration=0;
+let linkTimer: ReturnType<typeof setTimeout> | undefined;
+let currentTicket: string | null=null;
+const linkStatus=document.querySelector('#oauth-status')!;
+function stopNativeLink(){linkGeneration++;currentTicket=null;if(linkTimer)clearTimeout(linkTimer);linkTimer=undefined;document.querySelector<HTMLAnchorElement>('#oauth-verify')!.removeAttribute('href');}
+async function nativeRequest(path:string,body:unknown){const response=await fetch('/account/oauth/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await response.json();if(!response.ok)throw new Error(data.detail||'Sign-in could not finish. Please start again.');return data;}
+async function startNativeLink(keyId:string,label:string){
+ stopNativeLink();const generation=linkGeneration;
+ const section=document.querySelector<HTMLElement>('#oauth-link')!;
+ section.hidden=false;document.querySelector<HTMLElement>('#oauth-connected')!.hidden=true;
+ document.querySelector('#oauth-key')!.textContent='Access key: '+label;
+ document.querySelector('#oauth-code')!.textContent='';linkStatus.textContent='Preparing secure sign-in…';
+ let data;try{data=await nativeRequest('start',{key_id:keyId});}catch(error){if(generation===linkGeneration){stopNativeLink();linkStatus.textContent=error instanceof Error?error.message:'Sign-in could not start. Please try again.';}throw error;}
+ if(generation!==linkGeneration)return;
+ currentTicket=data.ticket;
+ document.querySelector('#oauth-code')!.textContent=data.user_code;
+ document.querySelector<HTMLAnchorElement>('#oauth-verify')!.href=data.verification_uri_complete;
+ linkStatus.textContent='Waiting for you to approve sign-in. Keep this account tab open.';
+ section.scrollIntoView({behavior:'smooth',block:'start'});
+ const expiresAt=Date.now()+Number(data.expires_in)*1000;
+ async function poll(){
+  if(generation!==linkGeneration||!currentTicket)return;
+  if(Date.now()>=expiresAt){stopNativeLink();linkStatus.textContent='Sign-in expired. Use the access key’s Connect button to start again.';return;}
+  try{const result=await nativeRequest('poll',{ticket:currentTicket});if(generation!==linkGeneration)return;
+   if(result.status==='linked'){stopNativeLink();linkStatus.textContent='Connected. Add Hivemind to your native app using the endpoint below.';document.querySelector<HTMLElement>('#oauth-connected')!.hidden=false;document.querySelector<HTMLInputElement>('#oauth-endpoint')!.value=result.mcp_url;return;}
+   linkTimer=setTimeout(poll,Math.max(15,Number(result.interval)||15)*1000);
+  }catch(error){if(generation!==linkGeneration)return;stopNativeLink();linkStatus.textContent=error instanceof Error?error.message:'Sign-in could not finish. Please start again.';}
+ }
+ linkTimer=setTimeout(poll,Math.max(15,Number(data.interval)||15)*1000);
+}
+document.querySelector('#oauth-cancel')!.addEventListener('click',()=>{stopNativeLink();document.querySelector<HTMLElement>('#oauth-link')!.hidden=true;});
+window.addEventListener('pagehide',stopNativeLink);
+
+refresh();
+</script>

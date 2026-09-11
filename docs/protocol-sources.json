@@ -1,0 +1,100 @@
+[
+  {
+    "id": "mcp-2025-architecture",
+    "title": "MCP 2025-11-25 architecture",
+    "url": "https://modelcontextprotocol.io/specification/2025-11-25/architecture",
+    "accessed": "2026-09-10",
+    "supports": "Host controls orchestration and retains the full conversation; servers receive necessary context only."
+  },
+  {
+    "id": "mcp-2025-schema",
+    "title": "MCP 2025-11-25 schema",
+    "url": "https://modelcontextprotocol.io/specification/2025-11-25/schema",
+    "accessed": "2026-09-10",
+    "supports": "InitializeResult.instructions, tool hint semantics, audience annotations and negotiated capabilities."
+  },
+  {
+    "id": "mcp-2025-lifecycle",
+    "title": "MCP 2025-11-25 lifecycle",
+    "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle",
+    "accessed": "2026-09-10",
+    "supports": "Initialization negotiates versions/capabilities and returns instructions."
+  },
+  {
+    "id": "mcp-2026-changes",
+    "title": "MCP 2026-07-28 changes",
+    "url": "https://modelcontextprotocol.io/specification/2026-07-28/changelog",
+    "accessed": "2026-09-10",
+    "supports": "Latest observed revision removes initialization handshake and sessions and introduces server/discover."
+  },
+  {
+    "id": "mcp-2026-schema",
+    "title": "MCP 2026-07-28 schema",
+    "url": "https://modelcontextprotocol.io/specification/2026-07-28/schema",
+    "accessed": "2026-09-10",
+    "supports": "DiscoverResult carries instructions, supportedVersions, ttlMs and cacheScope."
+  },
+  {
+    "id": "fastmcp-tools",
+    "title": "FastMCP tools",
+    "url": "https://gofastmcp.com/servers/tools",
+    "accessed": "2026-09-10",
+    "supports": "Tool annotations, metadata, dependency injection and ToolResult structured_content; APIs independently verified against installed 3.4.7 source."
+  },
+  {
+    "id": "openai-developer-mode",
+    "title": "ChatGPT developer mode",
+    "url": "https://developers.openai.com/api/docs/guides/developer-mode",
+    "accessed": "2026-09-10",
+    "supports": "Instructions guidance; self-contained first 512 characters; default write confirmation; remembered choice limited to current conversation."
+  },
+  {
+    "id": "mcp-2025-tools",
+    "title": "MCP 2025-11-25 tools",
+    "url": "https://modelcontextprotocol.io/specification/2025-11-25/server/tools",
+    "accessed": "2026-09-10",
+    "supports": "Tool discovery, complete descriptors and model-controlled invocation."
+  },
+  {
+    "id": "openai-tool-reference",
+    "title": "OpenAI plugin tool reference",
+    "url": "https://developers.openai.com/plugins/reference",
+    "accessed": "2026-09-10",
+    "supports": "Tool safety flag semantics; bounded private accounts are not automatically open-world."
+  },
+  {
+    "id": "fastmcp-middleware",
+    "title": "FastMCP middleware",
+    "url": "https://gofastmcp.com/servers/middleware",
+    "accessed": "2026-09-10",
+    "supports": "Per-request list interception and descriptor transformations; installed API independently verified."
+  },
+  {
+    "id": "fastmcp-authorization",
+    "title": "FastMCP authorization",
+    "url": "https://gofastmcp.com/servers/authorization",
+    "accessed": "2026-09-10",
+    "supports": "Authorization checks apply to listing and calls."
+  },
+  {
+    "id": "mcp-2025-tasks",
+    "title": "MCP 2025-11-25 tasks",
+    "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/utilities/tasks",
+    "accessed": "2026-09-10",
+    "supports": "Experimental negotiated task augmentation supports polling and deferred results, not autonomous selection."
+  },
+  {
+    "id": "mcp-2025-sampling",
+    "title": "MCP 2025-11-25 sampling",
+    "url": "https://modelcontextprotocol.io/specification/2025-11-25/client/sampling",
+    "accessed": "2026-09-10",
+    "supports": "Client-controlled optional sampling capability; not unrestricted access to chat history."
+  },
+  {
+    "id": "claude-custom-connectors",
+    "title": "Claude custom connectors",
+    "url": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+    "accessed": "2026-09-10",
+    "supports": "Per-conversation enabling, OAuth permissions, approval requests and allow-always user controls."
+  }
+]

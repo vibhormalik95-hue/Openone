@@ -1,0 +1,196 @@
+{
+  "$defs": {
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_key": {
+          "maxLength": 96,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+          "title": "Entity Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "fact",
+            "constraint",
+            "decision",
+            "config",
+            "task"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "state": {
+          "default": "tentative",
+          "enum": [
+            "tentative",
+            "accepted",
+            "retracted"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "expected_version": {
+          "description": "Last observed ledger_versions[entity_key]; use 0 only for a new entity.",
+          "maximum": 999999999,
+          "minimum": 0,
+          "title": "Expected Version",
+          "type": "integer"
+        },
+        "evidence": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_key",
+        "kind",
+        "value",
+        "expected_version",
+        "evidence"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "client": {
+          "default": "mcp-host",
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Client",
+          "type": "string"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conversation Id"
+        },
+        "message_id": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message Id"
+        }
+      },
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "history",
+        "override"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "project_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Project Id"
+    },
+    "entity_key": {
+      "anyOf": [
+        {
+          "maxLength": 96,
+          "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Entity Key"
+    },
+    "limit": {
+      "default": 50,
+      "maximum": 50,
+      "minimum": 1,
+      "title": "Limit",
+      "type": "integer"
+    },
+    "offset": {
+      "default": 0,
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Offset",
+      "type": "integer"
+    },
+    "claim": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Claim"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "idempotency_key": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Idempotency Key"
+    },
+    "source": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Source"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "action"
+  ],
+  "title": "ManageRequest",
+  "type": "object"
+}

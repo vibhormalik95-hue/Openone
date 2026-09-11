@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "proof_bundle_sha256": "3e8c3309e1b8a51227f6fb011c63ad859a21b6cba160cdce12cc49a07183fc0e",
+  "public_key_sha256": "11e16e6caa54895af94c694d57317bb5cd436851433df6e27f09702bfd62a741",
+  "source_files_matching_evidence": 22,
+  "checks": [
+    {
+      "check": "offline_unanchored_verify",
+      "status": "PASS",
+      "exit_code": 0,
+      "stdout": "{\"status\": \"PASS\", \"verification\": \"receipt chains, workflow assertions, bundle SHA-256 and Ed25519 signature\", \"trust\": \"unanchored integrity only; embedded key does not authenticate origin\"}",
+      "stderr": ""
+    },
+    {
+      "check": "offline_pinned_verify",
+      "status": "PASS",
+      "exit_code": 0,
+      "stdout": "{\"status\": \"PASS\", \"verification\": \"receipt chains, workflow assertions, bundle SHA-256 and Ed25519 signature\", \"trust\": \"pinned to caller-supplied external anchor\"}",
+      "stderr": ""
+    },
+    {
+      "check": "wrong_key_pin_rejected",
+      "status": "PASS",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "{\"status\": \"FAIL\", \"error_type\": \"AssertionError\", \"detail\": \"Unexpected signing key fingerprint\"}"
+    },
+    {
+      "check": "optimized_verifier_rejected",
+      "status": "PASS",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/089d36a752d8/hivemind-scale-final/tests/investor_proof_harness.py\", line 12, in <module>\n    raise RuntimeError(\"Proof execution requires Python assertions; do not use -O or PYTHONOPTIMIZE\")\nRuntimeError: Proof execution requires Python assertions; do not use -O or PYTHONOPTIMIZE"
+    },
+    {
+      "check": "optimized_model_rejected",
+      "status": "PASS",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"/workspace/scratch/089d36a752d8/hivemind-scale-final/tests/verify_ledger_model.py\", line 11, in <module>\n    raise RuntimeError(\"Proof execution requires Python assertions; do not use -O or PYTHONOPTIMIZE\")\nRuntimeError: Proof execution requires Python assertions; do not use -O or PYTHONOPTIMIZE"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling==1.29.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hivemind-scale"
+version = "0.3.0"
+description = "Headless, project-scoped working memory over remote MCP"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "fastmcp-slim[server]==3.4.7",
+  "fastapi==0.141.1",
+  "psycopg[binary,pool]==3.3.5",
+  "psycopg-pool==3.3.1",
+  "pgvector==0.5.0",
+  "pydantic==2.13.5",
+  "openai==3.13.0",
+  "sentry-sdk==2.69.1",
+  "uvicorn==0.52.4",
+  "stripe==14.4.1",
+  "httpx==0.28.1",
+  "py-key-value-aio[redis]==0.4.5",
+  "redis==8.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "fastmcp-slim[client]==3.4.7",
+  "pytest==9.1.1",
+  "pytest-asyncio==1.4.0",
+  "ruff==0.16.7",
+  "asgi-lifespan==2.1.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hivemind"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = ["integration: requires a migrated PostgreSQL database"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "S"]
+ignore = ["E501", "S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106", "S108"]

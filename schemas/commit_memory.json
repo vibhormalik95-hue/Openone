@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "request": {
+      "additionalProperties": false,
+      "properties": {
+        "project_id": {
+          "format": "uuid",
+          "title": "Project Id",
+          "type": "string"
+        },
+        "idempotency_key": {
+          "format": "uuid",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "memories": {
+          "items": {
+            "$ref": "#/$defs/MemoryItem"
+          },
+          "maxItems": 20,
+          "title": "Memories",
+          "type": "array"
+        },
+        "constraints": {
+          "items": {
+            "$ref": "#/$defs/ConstraintChange"
+          },
+          "maxItems": 20,
+          "title": "Constraints",
+          "type": "array"
+        }
+      },
+      "required": [
+        "project_id",
+        "idempotency_key",
+        "source"
+      ],
+      "title": "CommitMemoryRequest",
+      "type": "object"
+    }
+  },
+  "required": [
+    "request"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "ConstraintChange": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "maxLength": 96,
+          "minLength": 1,
+          "pattern": "^[a-z0-9_.-]+$",
+          "title": "Key",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "expected_version": {
+          "description": "Use recall.constraint_versions[key] when present, including superseded keys; otherwise 0.",
+          "maximum": 2147483646,
+          "minimum": 0,
+          "title": "Expected Version",
+          "type": "integer"
+        },
+        "status": {
+          "default": "active",
+          "enum": [
+            "active",
+            "superseded"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "value",
+        "expected_version"
+      ],
+      "title": "ConstraintChange",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "MemoryItem": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "decision",
+            "task",
+            "state",
+            "note"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Metadata",
+          "type": "object"
+        }
+      },
+      "required": [
+        "kind",
+        "text"
+      ],
+      "title": "MemoryItem",
+      "type": "object"
+    },
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "client": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Client",
+          "type": "string"
+        },
+        "conversation_id": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Conversation Id",
+          "type": "string"
+        },
+        "message_id": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message Id"
+        }
+      },
+      "required": [
+        "client",
+        "conversation_id"
+      ],
+      "title": "Source",
+      "type": "object"
+    }
+  }
+}

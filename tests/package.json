@@ -1,0 +1,13 @@
+{
+  "name": "hivemind-sql-validation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sql": "node sql-smoke.mjs",
+    "python": "node pglite-python.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.3.14",
+    "@electric-sql/pglite-socket": "0.0.19"
+  }
+}

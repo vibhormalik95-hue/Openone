@@ -1,0 +1,30 @@
+# Optional complete OAuth persistence overlay. Never publish the Redis port.
+services:
+  blue:
+    depends_on:
+      oauth-redis:
+        condition: service_healthy
+  green:
+    depends_on:
+      oauth-redis:
+        condition: service_healthy
+  oauth-redis:
+    image: ${REDIS_IMAGE:?Run scripts/configure_oauth.py first}
+    restart: unless-stopped
+    networks: [backend]
+    volumes: [oauth_redis_data:/data, ./deploy/oauth-redis.conf:/usr/local/etc/redis/redis.conf:ro]
+    command: [redis-server, /usr/local/etc/redis/redis.conf]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      # With requirepass the CLI exits successfully on NOAUTH too: verifies liveness;
+      # API readiness separately proves authenticated reads/writes in release gate.
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 256m
+    cpus: 0.5
+    logging:
+      driver: local
+      options: {max-size: 10m, max-file: '3'}
+volumes:
+  oauth_redis_data:

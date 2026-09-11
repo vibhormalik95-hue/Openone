@@ -1,0 +1,17 @@
+---
+import Page from '../layouts/Page.astro';
+---
+<Page title="Memory that moves with your work">
+<p class="eyebrow">Headless memory for AI work</p><h1>Keep the decisions.<br/>Change the model.</h1>
+<p>Connect persistent project memory to your existing AI tools. Hivemind recalls the constraints that matter and saves the decisions you approve.</p>
+<p class="muted">Use Cursor and Claude Code with a scoped key. Claude and ChatGPT connectors require the supported OAuth setup for your account. Availability and approval prompts depend on your native app.</p>
+<div class="cards"><article class="card"><h2>Starter</h2><p class="price">$15 <small>USD / month</small></p><ul><li>5 projects</li><li>Personal device keys</li><li>5,000 memory commits / month</li><li>25,000 recalls / month</li></ul><button data-tier="starter">Start personal memory</button></article><article class="card"><h2>Team</h2><p class="price">$49 <small>USD / month</small></p><ul><li>Unlimited project count</li><li>Separate keys for each collaborator</li><li>20,000 memory commits / month</li><li>100,000 recalls / month</li></ul><button data-tier="team">Start shared memory</button></article></div>
+<p id="status" role="status" aria-live="polite"></p><p class="muted">Your AI app subscription is separate. Monthly usage limits apply; there are no automatic overage charges. Cancel renewal from your account. Supported text memory only; your full chat history is not automatically imported.</p>
+</Page>
+<script>
+for (const button of document.querySelectorAll<HTMLButtonElement>('button[data-tier]')) {
+ button.addEventListener('click', async () => { button.disabled=true; const status=document.querySelector('#status')!;
+ try {const r=await fetch('/billing/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({plan:button.dataset.tier})});const data=await r.json();if(!r.ok)throw new Error(data.detail);window.location.assign(data.url);}catch(e){status.textContent=e instanceof Error?e.message:'Could not start Checkout. Please retry.';button.disabled=false;}
+ });
+}
+</script>

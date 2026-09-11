@@ -1,0 +1,62 @@
+name: Deploy
+on:
+  workflow_call:
+    inputs:
+      image:
+        required: true
+        type: string
+      source_sha:
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.source_sha }}
+          persist-credentials: false
+      - name: Prepare trusted SSH transport
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          umask 077
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          test -s ~/.ssh/known_hosts
+      - name: Transfer reviewed release and deploy by digest
+        env:
+          IMAGE: ${{ inputs.image }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          [[ "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          [[ "$IMAGE" =~ ^ghcr\.io/[a-z0-9_./-]+@sha256:[a-f0-9]{64}$ ]]
+          [[ "$DEPLOY_HOST" =~ ^[A-Za-z0-9.-]+$ ]]
+          [[ "$DEPLOY_USER" =~ ^[a-z_][a-z0-9_-]*$ ]]
+          tar --exclude=__pycache__ --exclude='*.pyc' -czf "/tmp/hivemind-$SOURCE_SHA.tgz" scripts sql docker-compose.prod.yml compose.oauth.yml Caddyfile deploy/set-role-passwords.sql
+          scp -o BatchMode=yes -o StrictHostKeyChecking=yes "/tmp/hivemind-$SOURCE_SHA.tgz" "$DEPLOY_USER@$DEPLOY_HOST:/tmp/hivemind-$SOURCE_SHA.tgz"
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes "$DEPLOY_USER@$DEPLOY_HOST" "bash -s -- '$IMAGE' '$SOURCE_SHA'" <<'REMOTE'
+          set -Eeuo pipefail
+          cd /opt/hivemind
+          test -r deploy/runtime.env
+          tar -xzf "/tmp/hivemind-$2.tgz" -C /opt/hivemind
+          rm "/tmp/hivemind-$2.tgz"
+          scripts/deploy.sh "$1"
+          REMOTE
+      - name: Remove ephemeral SSH private key
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519

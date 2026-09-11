@@ -1,0 +1,176 @@
+[
+  {
+    "id": 1,
+    "title": "MCP authorization",
+    "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 2,
+    "title": "Claude connectors",
+    "url": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 3,
+    "title": "ChatGPT developer mode",
+    "url": "https://developers.openai.com/api/docs/guides/developer-mode",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 4,
+    "title": "OpenAI authentication",
+    "url": "https://developers.openai.com/plugins/build/auth",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 5,
+    "title": "GPT Actions",
+    "url": "https://developers.openai.com/api/docs/actions/introduction",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 6,
+    "title": "Claude memory",
+    "url": "https://code.claude.com/docs/en/memory",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 7,
+    "title": "Cursor rules",
+    "url": "https://cursor.com/docs/rules",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 8,
+    "title": "Codex instructions",
+    "url": "https://developers.openai.com/codex/guides/agents-md",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 9,
+    "title": "Linear GitHub integration and Issues Sync",
+    "url": "https://linear.app/docs/github",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 10,
+    "title": "FastMCP",
+    "url": "https://github.com/PrefectHQ/fastmcp",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 11,
+    "title": "pgvector Python",
+    "url": "https://github.com/pgvector/pgvector-python",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 12,
+    "title": "pg-boss",
+    "url": "https://github.com/timgit/pg-boss",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 13,
+    "title": "MCP transports",
+    "url": "https://modelcontextprotocol.io/specification/2025-11-25/basic/transports",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 14,
+    "title": "OpenAI embedding model",
+    "url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 15,
+    "title": "Claude Code hooks",
+    "url": "https://code.claude.com/docs/en/hooks",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 16,
+    "title": "PostgreSQL 17 row security",
+    "url": "https://www.postgresql.org/docs/17/ddl-rowsecurity.html",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 17,
+    "title": "pgvector HNSW and iterative scans",
+    "url": "https://github.com/pgvector/pgvector",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 18,
+    "title": "Neon pgvector",
+    "url": "https://neon.com/docs/extensions/pgvector",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 19,
+    "title": "Neon roles",
+    "url": "https://neon.com/docs/manage/roles",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 20,
+    "title": "Railway pricing",
+    "url": "https://railway.com/pricing",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 21,
+    "title": "Railway health checks",
+    "url": "https://docs.railway.com/deployments/healthchecks",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 22,
+    "title": "Render deployments",
+    "url": "https://render.com/docs/deploys",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 23,
+    "title": "Caddy reverse proxy",
+    "url": "https://caddyserver.com/docs/caddyfile/directives/reverse_proxy",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 24,
+    "title": "Caddy automatic HTTPS",
+    "url": "https://caddyserver.com/docs/automatic-https",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 25,
+    "title": "Stripe webhooks",
+    "url": "https://docs.stripe.com/webhooks",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 26,
+    "title": "Stripe Checkout fulfillment",
+    "url": "https://docs.stripe.com/checkout/fulfillment",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 27,
+    "title": "Stripe customer portal",
+    "url": "https://docs.stripe.com/customer-management",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 28,
+    "title": "Product Hunt posting guide",
+    "url": "https://help.producthunt.com/en/articles/479557-how-to-post-a-product",
+    "accessed": "2026-09-10"
+  },
+  {
+    "id": 29,
+    "title": "Show HN guidelines",
+    "url": "https://news.ycombinator.com/showhn.html",
+    "accessed": "2026-09-10"
+  }
+]

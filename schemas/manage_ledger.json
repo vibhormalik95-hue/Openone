@@ -1,0 +1,201 @@
+{
+  "name": "manage_ledger",
+  "title": "Inspect or override ledger",
+  "description": "Inspect paginated immutable entity history with action=history, or append an explicit manual override with action=override. Overrides require source, a stable idempotency key and a claim with the current expected_version; a conflict never overwrites. Retracting a constraint preserves history. All actions use the authenticated project scope. This tool is write-capable even when a particular history call only reads.",
+  "inputSchema": {
+    "additionalProperties": false,
+    "properties": {
+      "request": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "enum": [
+              "history",
+              "override"
+            ],
+            "type": "string"
+          },
+          "project_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "entity_key": {
+            "anyOf": [
+              {
+                "maxLength": 96,
+                "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "limit": {
+            "default": 50,
+            "maximum": 50,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "offset": {
+            "default": 0,
+            "maximum": 10000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "claim": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "entity_key": {
+                    "maxLength": 96,
+                    "minLength": 1,
+                    "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+                    "type": "string"
+                  },
+                  "kind": {
+                    "enum": [
+                      "fact",
+                      "constraint",
+                      "decision",
+                      "config",
+                      "task"
+                    ],
+                    "type": "string"
+                  },
+                  "state": {
+                    "default": "tentative",
+                    "enum": [
+                      "tentative",
+                      "accepted",
+                      "retracted"
+                    ],
+                    "type": "string"
+                  },
+                  "value": {},
+                  "expected_version": {
+                    "description": "Last observed ledger_versions[entity_key]; use 0 only for a new entity.",
+                    "maximum": 999999999,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "evidence": {
+                    "maxLength": 2000,
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_key",
+                  "kind",
+                  "value",
+                  "expected_version",
+                  "evidence"
+                ],
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "source": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "client": {
+                    "default": "mcp-host",
+                    "maxLength": 80,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "conversation_id": {
+                    "anyOf": [
+                      {
+                        "maxLength": 255,
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  },
+                  "message_id": {
+                    "anyOf": [
+                      {
+                        "maxLength": 255,
+                        "type": "string"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  }
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [
+      "request"
+    ],
+    "type": "object"
+  },
+  "outputSchema": {
+    "additionalProperties": true,
+    "type": "object"
+  },
+  "annotations": {
+    "readOnlyHint": false,
+    "destructiveHint": true,
+    "idempotentHint": true,
+    "openWorldHint": true
+  },
+  "_meta": {
+    "hivemind.dev/role": "project_memory",
+    "hivemind.dev/automation": "host_controlled",
+    "hivemind.dev/credential_present": false,
+    "hivemind.dev/authorization": "required",
+    "fastmcp": {
+      "tags": []
+    }
+  }
+}

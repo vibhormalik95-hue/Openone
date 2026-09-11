@@ -1,0 +1,86 @@
+name: hivemind
+x-logging: &logging
+  driver: local
+  options:
+    max-size: 10m
+    max-file: '5'
+x-app: &app
+  restart: unless-stopped
+  init: true
+  env_file: ./deploy/runtime.env
+  read_only: true
+  tmpfs: ['/tmp:size=64m,mode=1777']
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  networks: [backend]
+  stop_grace_period: 45s
+  mem_limit: 768m
+  cpus: 1.0
+  pids_limit: 128
+  logging: *logging
+services:
+  blue:
+    <<: *app
+    image: ${APP_IMAGE_BLUE:?Run scripts/bootstrap.sh first}
+  green:
+    <<: *app
+    image: ${APP_IMAGE_GREEN:?Run scripts/bootstrap.sh first}
+  worker:
+    <<: *app
+    image: ${WORKER_IMAGE:?Run scripts/bootstrap.sh first}
+    env_file: ./deploy/worker.env
+    command: [python, -m, hivemind.ledger_worker]
+    # Worker uses durable database claims and expiring leases, never process memory.
+    healthcheck:
+      disable: true
+  caddy:
+    image: ${CADDY_IMAGE:?Run scripts/bootstrap.sh first}
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?Set domain}
+      ACME_EMAIL: ${ACME_EMAIL:?Set TLS contact}
+    ports: ['80:80', '443:443', '443:443/udp']
+    volumes:
+      # Mount directory, not individual files: atomic config rename remains visible.
+      - ./deploy/caddy:/etc/caddy:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      backend:
+        ipv4_address: ${CADDY_IP:-172.28.172.10}
+    stop_grace_period: 45s
+    logging: *logging
+  postgres:
+    image: ${POSTGRES_IMAGE:?Run scripts/bootstrap.sh first}
+    profiles: [selfhost-db]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hivemind
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    secrets: [postgres_password]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    networks: [backend]
+    shm_size: 256m
+    stop_grace_period: 60s
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U postgres -d hivemind']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    command: [postgres, -c, max_connections=100, -c, shared_buffers=256MB, -c, password_encryption=scram-sha-256, -c, log_statement=none, -c, log_min_error_statement=panic]
+    logging: *logging
+secrets:
+  postgres_password:
+    file: ./deploy/secrets/postgres_password
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:
+networks:
+  backend:
+    name: hivemind_backend
+    ipam:
+      config:
+        - subnet: ${NETWORK_SUBNET:-172.28.172.0/24}

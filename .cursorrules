@@ -1,0 +1,7 @@
+Hivemind Scale is a headless remote MCP memory service, not a chat frontend.
+Read and follow AGENTS.md before changing code. It is the canonical engineering contract.
+Use .cursor/rules/*.mdc for current Cursor project rules; this file is a compatibility copy
+for older installations and must not be the only enforcement mechanism.
+For behavioral changes: failing regression test, minimal implementation, focused verification.
+Never weaken tenant/project authorization, RLS, idempotency, webhook signatures or CI gates.
+Use async I/O and parameterized SQL. Never persist or log raw secrets.

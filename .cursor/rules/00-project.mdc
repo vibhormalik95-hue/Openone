@@ -1,0 +1,7 @@
+---
+description: Hivemind Scale product and engineering invariants
+alwaysApply: true
+---
+Read and follow the canonical engineering agreement in @AGENTS.md.
+The product has two remote MCP memory tools and a small billing/key onboarding surface.
+Keep native clients as the chat interface. Prove acceptance with measured test results.

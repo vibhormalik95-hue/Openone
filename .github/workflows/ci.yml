@@ -1,0 +1,137 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      python_image: ${{ steps.base.outputs.python_image }}
+      node_image: ${{ steps.base.outputs.node_image }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Create Python environment
+        run: |
+          python3 -c 'import sys; assert sys.version_info[:2] == (3,12)'
+          python3 -m venv .venv
+          .venv/bin/pip install --require-hashes -r requirements-dev.lock
+          .venv/bin/pip install --no-deps -e .
+      - name: Start isolated PostgreSQL 17 + pgvector 0.8
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          password=$(openssl rand -hex 32)
+          echo "::add-mask::$password"
+          echo "TEST_DATABASE_URL=postgresql://postgres:$password@127.0.0.1:5432/hivemind" >> "$GITHUB_ENV"
+          echo "PGPASSWORD=$password" >> "$GITHUB_ENV"
+          docker pull pgvector/pgvector:0.8.6-pg17-bookworm
+          db_image=$(docker image inspect --format '{{index .RepoDigests 0}}' pgvector/pgvector:0.8.6-pg17-bookworm)
+          docker run -d --name test-postgres -e POSTGRES_DB=hivemind -e POSTGRES_PASSWORD="$password" -p 127.0.0.1:5432:5432 "$db_image"
+          for attempt in $(seq 1 30); do
+            if docker exec test-postgres pg_isready -U postgres -d hivemind; then break; fi
+            sleep 1
+          done
+          docker exec test-postgres pg_isready -U postgres -d hivemind
+          for migration in sql/[0-9][0-9][0-9]_*.sql; do
+            docker exec -i test-postgres psql -X -U postgres -d hivemind -v ON_ERROR_STOP=1 -1 < "$migration"
+          done
+      - name: Lint and behavioral isolation tests
+        env:
+          HVM_NATIVE_CONCURRENCY: "1"
+        run: |
+          .venv/bin/ruff check src tests scripts
+          .venv/bin/pytest -q
+      - name: Validate deployment configuration and build image
+        id: base
+        run: |
+          for script in scripts/*.sh; do bash -n "$script"; done
+          docker pull python:3.12-slim-bookworm
+          python_image=$(docker image inspect --format '{{index .RepoDigests 0}}' python:3.12-slim-bookworm)
+          docker pull node:24-bookworm-slim
+          node_image=$(docker image inspect --format '{{index .RepoDigests 0}}' node:24-bookworm-slim)
+          echo "python_image=$python_image" >> "$GITHUB_OUTPUT"
+          echo "node_image=$node_image" >> "$GITHUB_OUTPUT"
+          docker build --build-arg PYTHON_IMAGE="$python_image" --build-arg NODE_IMAGE="$node_image" -t hivemind-ci:${{ github.sha }} .
+          mkdir -p deploy/caddy deploy/secrets
+          touch deploy/runtime.env deploy/worker.env
+          openssl rand -hex 32 > deploy/secrets/postgres_password
+          cp Caddyfile deploy/caddy/Caddyfile
+          printf 'to blue:8000\n' > deploy/caddy/upstream.conf
+          APP_IMAGE_BLUE=hivemind-ci:${{ github.sha }} APP_IMAGE_GREEN=hivemind-ci:${{ github.sha }} \
+          WORKER_IMAGE=hivemind-ci:${{ github.sha }} CADDY_IMAGE=caddy:2-alpine \
+          POSTGRES_IMAGE=pgvector/pgvector:0.8.6-pg17-bookworm DOMAIN=localhost ACME_EMAIL=ci@hivemind.invalid \
+          docker compose -f docker-compose.prod.yml config -q
+          docker run --rm -e DOMAIN=localhost -e ACME_EMAIL=ci@hivemind.invalid \
+            -v "$PWD/deploy/caddy:/etc/caddy:ro" caddy:2-alpine \
+            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+      - name: Cleanup
+        if: always()
+        run: docker rm -f test-postgres || true
+  investor-proof:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Execute native PostgreSQL proof and concurrency gates
+        run: ./quickstart.sh --local-proof --output "$RUNNER_TEMP/hivemind-investor-proof"
+      - name: Retain execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hivemind-investor-proof
+          path: ${{ runner.temp }}/hivemind-investor-proof/
+          if-no-files-found: warn
+          retention-days: 30
+  publish:
+    needs: [test, investor-proof]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Publish immutable OCI artifact
+        id: build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          python_image='${{ needs.test.outputs.python_image }}'
+          node_image='${{ needs.test.outputs.node_image }}'
+          docker buildx create --use
+          docker buildx build --push --provenance=mode=max --sbom=true \
+            --build-arg PYTHON_IMAGE="$python_image" --build-arg NODE_IMAGE="$node_image" \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
+            --tag "$image:$GITHUB_SHA" --metadata-file /tmp/image-metadata.json .
+          digest=$(python3 -c 'import json; print(json.load(open("/tmp/image-metadata.json"))["containerimage.digest"])')
+          echo "image=$image@$digest" >> "$GITHUB_OUTPUT"
+          echo "Published $image@$digest" >> "$GITHUB_STEP_SUMMARY"
+          docker logout ghcr.io
+  deploy:
+    if: vars.DEPLOY_ENABLED == 'true'
+    needs: publish
+    uses: ./.github/workflows/deploy.yml
+    with:
+      image: ${{ needs.publish.outputs.image }}
+      source_sha: ${{ github.sha }}
+    secrets: inherit

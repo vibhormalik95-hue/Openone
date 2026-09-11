@@ -1,0 +1,217 @@
+{
+  "$defs": {
+    "Claim": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_key": {
+          "maxLength": 96,
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9_.-]*$",
+          "title": "Entity Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "fact",
+            "constraint",
+            "decision",
+            "config",
+            "task"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "state": {
+          "default": "tentative",
+          "enum": [
+            "tentative",
+            "accepted",
+            "retracted"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "expected_version": {
+          "description": "Last observed ledger_versions[entity_key]; use 0 only for a new entity.",
+          "maximum": 999999999,
+          "minimum": 0,
+          "title": "Expected Version",
+          "type": "integer"
+        },
+        "evidence": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Evidence",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_key",
+        "kind",
+        "value",
+        "expected_version",
+        "evidence"
+      ],
+      "title": "Claim",
+      "type": "object"
+    },
+    "ContextCheckpoint": {
+      "additionalProperties": false,
+      "description": "Caller attestation about visible context, never proof of unseen messages.",
+      "properties": {
+        "state": {
+          "enum": [
+            "complete",
+            "no_new_context",
+            "truncated",
+            "unavailable"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "phase": {
+          "default": "pre_task",
+          "enum": [
+            "pre_task",
+            "post_decision"
+          ],
+          "title": "Phase",
+          "type": "string"
+        }
+      },
+      "required": [
+        "state"
+      ],
+      "title": "ContextCheckpoint",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "Source": {
+      "additionalProperties": false,
+      "properties": {
+        "client": {
+          "default": "mcp-host",
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Client",
+          "type": "string"
+        },
+        "conversation_id": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conversation Id"
+        },
+        "message_id": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message Id"
+        }
+      },
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "project_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Project Id"
+    },
+    "query": {
+      "default": "Current project constraints, decisions, and unfinished tasks",
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Query",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Idempotency Key"
+    },
+    "source": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Source"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "source_fragment": {
+      "anyOf": [
+        {
+          "maxLength": 12000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Compact visible delta. Queues tentative extraction; never include secrets.",
+      "title": "Source Fragment"
+    },
+    "claims": {
+      "items": {
+        "$ref": "#/$defs/Claim"
+      },
+      "maxItems": 20,
+      "title": "Claims",
+      "type": "array"
+    },
+    "checkpoint": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ContextCheckpoint"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "title": "SyncRequest",
+  "type": "object"
+}
