@@ -1,4 +1,3 @@
-from urllib.parse import parse_qs
 """Headless memory surface shared by classic FastMCP and the modern adapter.
 
 Run with uvicorn hivemind.server:create_app --factory. The wire initialize field
@@ -6,6 +5,7 @@ is `instructions`. Instructions and annotations are advisory host input.
 """
 
 from __future__ import annotations
+from urllib.parse import parse_qs, urlencode
 
 import json
 from functools import wraps
@@ -194,7 +194,6 @@ def create_mcp(engine: LedgerEngine, auth) -> FastMCP:
 
 
 
-from urllib.parse import parse_qs, urlencode
 
 class TokenQueryMiddleware:
     def __init__(self, app):
