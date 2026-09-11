@@ -1,4 +1,4 @@
-SET LOCAL ROLE hivemind_owner;
+SET ROLE hivemind_owner;
 -- Billing control plane: runtime memory role gets no privileges on these tables.
 CREATE TABLE checkout_claims (
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -1,5 +1,5 @@
 -- Execute with psql --single-transaction; migration runner records checksum atomically.
-SET LOCAL ROLE hivemind_owner;
+SET ROLE hivemind_owner;
 CREATE FUNCTION authenticate_api_key(p_key_hash text)
 RETURNS TABLE(key_id uuid,tenant_id uuid)
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog,public,pg_temp AS $$

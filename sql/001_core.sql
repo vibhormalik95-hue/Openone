@@ -8,7 +8,12 @@ DO $$ BEGIN
     RAISE EXCEPTION 'pgvector >=0.8.0 required for iterative scans';
   END IF;
 END $$;
-SET LOCAL ROLE hivemind_owner;
+-- Session-scoped SET ROLE, not SET LOCAL. SET LOCAL outside an explicit transaction
+-- block is discarded with only a warning, which silently leaves every table below
+-- owned by the administrator instead of hivemind_owner and makes 002-006 fail with
+-- "must be owner of table tenants". The matching RESET ROLE is at the end of the
+-- file, and scripts/migrate.sh also resets before recording the migration.
+SET ROLE hivemind_owner;
 ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
 CREATE TABLE tenants (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

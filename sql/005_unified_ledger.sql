@@ -7,7 +7,7 @@ DO $$ BEGIN
   END IF;
 END $$;
 GRANT USAGE ON SCHEMA public TO hivemind_ledger_writer;
-SET LOCAL ROLE hivemind_owner;
+SET ROLE hivemind_owner;
 
 -- JSONB normalizes object key order and JSON whitespace. Removing numeric scale
 -- also makes 1, 1.0 and 1e0 identical. String whitespace/case is meaningful and
